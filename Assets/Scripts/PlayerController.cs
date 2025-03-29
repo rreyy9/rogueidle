@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     public float jumpSpeed = 1.0f;                // Initial upward velocity when jumping
     public float inAirAcceleration = 0.15f;       // How quickly player accelerates while airborne
     public float terminalVelocity = 50f;          // Maximum falling speed
+    public float inAirDrag = 5f;
 
     [Header("Animation")]
     public float playerModelRotationSpeed = 10f;  // How quickly player model rotates to face movement direction
@@ -81,7 +82,7 @@ public class PlayerController : MonoBehaviour
         bool isMovementInput = _playerLocomotionInput.MovementInput != Vector2.zero;  // Is player pressing movement keys
         bool isMovingLaterally = IsMovingLaterally();  // Is player actually moving horizontally
         bool isSprinting = _playerLocomotionInput.SprintToggledOn && isMovingLaterally;  // Is sprint active and moving
-        bool isWalking = (isMovingLaterally && !canRun) || _playerLocomotionInput.WalkToggledOn;  // Is walk toggled or sideways movement
+        bool isWalking = isMovingLaterally && (!canRun || _playerLocomotionInput.WalkToggledOn);  // Is walk toggled or sideways movement
         bool isGrounded = IsGrounded();  // Is player touching the ground
 
         // Determine lateral movement state using conditional (ternary) operator chain
@@ -176,9 +177,11 @@ public class PlayerController : MonoBehaviour
         Vector3 movementDelta = movementDirection * lateralAcceleration * Time.deltaTime;
         Vector3 newVelocity = _characterController.velocity + movementDelta;
 
+        float dragMagnitude = isGrounded ? drag : inAirDrag;
+
         // Apply drag to slow player down when not actively moving
-        Vector3 currentDrag = newVelocity.normalized * drag * Time.deltaTime;
-        newVelocity = (newVelocity.magnitude > drag * Time.deltaTime) ? newVelocity - currentDrag : Vector3.zero;
+        Vector3 currentDrag = newVelocity.normalized * dragMagnitude * Time.deltaTime;
+        newVelocity = (newVelocity.magnitude > dragMagnitude * Time.deltaTime) ? newVelocity - currentDrag : Vector3.zero;
 
         // Clamp horizontal speed to max allowed for current movement state
         newVelocity = Vector3.ClampMagnitude(new Vector3(newVelocity.x, 0f, newVelocity.z), clampLateralAcceleration);
