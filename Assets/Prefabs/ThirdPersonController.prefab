@@ -2950,7 +2950,7 @@ Transform:
   m_GameObject: {fileID: 4393780353002677542}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8000002, z: -4}
+  m_LocalPosition: {x: 0, y: 0.8000001, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4441,7 +4441,7 @@ GameObject:
   - component: {fileID: 3953025901225071484}
   - component: {fileID: 2852420463075319443}
   - component: {fileID: 346433156450956791}
-  - component: {fileID: 2922256488629604610}
+  - component: {fileID: 4309021595499135610}
   m_Layer: 6
   m_Name: ThirdPersonController
   m_TagString: Untagged
@@ -4458,7 +4458,7 @@ Transform:
   m_GameObject: {fileID: 6132189503131274928}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.09, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4608,7 +4608,7 @@ MonoBehaviour:
   _cameraZoomSpeed: 0.2
   _cameraMinZoom: 1
   _cameraMaxZoom: 5
---- !u!114 &2922256488629604610
+--- !u!114 &4309021595499135610
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

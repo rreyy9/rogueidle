@@ -39,7 +39,7 @@ public class PlayerActionsInput : MonoBehaviour, PlayerControls.IPlayerActionMap
         // Check that input system is initialized
         if (PlayerInputManager.Instance?.PlayerControls == null)
         {
-            Debug.LogError("Player controls is not initialized - cannot enable");
+            Debug.LogError("Player controls is not initialized - cannot disable");
             return;
         }
 
