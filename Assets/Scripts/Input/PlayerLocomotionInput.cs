@@ -7,12 +7,23 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
 {
     [SerializeField] private bool holdToSprint = true;  // Toggle between hold and toggle sprint modes
 
+    [Header("Cursor Settings")]
+    [SerializeField] private bool hideCursorOnStart = true;     // Should the cursor be hidden when the game starts
+    [SerializeField] private CursorLockMode defaultLockMode = CursorLockMode.Locked; // Default cursor lock mode
+
     // Public properties to access input states - read-only outside this class
     public Vector2 MovementInput { get; private set; }  // WASD or analog stick input
     public Vector2 LookInput { get; private set; }      // Mouse or right stick movement
     public bool JumpPressed { get; private set; }       // Jump button pressed
     public bool SprintToggledOn { get; private set; }   // Is sprint currently active
     public bool WalkToggledOn { get; private set; }     // Is walk currently active
+    public bool CursorVisible { get; private set; }     // Is cursor currently visible
+
+    private void Start()
+    {
+        // Set initial cursor state when game starts
+        SetCursorState(hideCursorOnStart);
+    }
 
     // Register input callbacks when component is enabled
     private void OnEnable()
@@ -42,6 +53,9 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
         // Disable the locomotion action map and remove callbacks
         PlayerInputManager.Instance.PlayerControls.PlayerLocomotionMap.Disable();
         PlayerInputManager.Instance.PlayerControls.PlayerLocomotionMap.RemoveCallbacks(this);
+
+        // Show cursor when disabled (e.g., when game ends or player pauses)
+        SetCursorState(false);
     }
 
     // Reset single-frame input flags at the end of the frame
@@ -99,5 +113,30 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
 
         // Toggle walk state
         WalkToggledOn = !WalkToggledOn;
+    }
+
+    // New method to handle ESC key for toggling cursor visibility
+    public void OnToggleCursor(InputAction.CallbackContext context)
+    {
+        // Only trigger on initial press, not hold or release
+        if (!context.performed)
+            return;
+
+        // Toggle cursor visibility
+        CursorVisible = !CursorVisible;
+        SetCursorState(!CursorVisible);
+    }
+
+    // Helper method to set cursor state
+    private void SetCursorState(bool hideCursor)
+    {
+        // Update visibility
+        Cursor.visible = !hideCursor;
+
+        // Update lock state
+        Cursor.lockState = hideCursor ? defaultLockMode : CursorLockMode.None;
+
+        // Track current state
+        CursorVisible = !hideCursor;
     }
 }
