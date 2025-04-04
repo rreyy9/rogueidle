@@ -39,6 +39,12 @@ public class PlayerController : MonoBehaviour
     [Header("Environment Details")]
     [SerializeField] private LayerMask _groundLayers;  // Layers that are considered "ground" for collision detection
 
+    [Header("Ground Check Refiner")]
+    public float groundStickForce = 2.0f;             
+    public float groundSnapThreshold = 0.01f;         
+    public float groundCheckRayLength = 1.0f;
+    public float groundCheckOffset = 0.1f;
+
     private PlayerLocomotionInput _playerLocomotionInput;  // Component handling player input
     private PlayerState _playerState;                      // Component tracking player state (running, walking, etc.)
     private Vector2 _cameraRotation = Vector2.zero;        // Current camera rotation angles
@@ -119,14 +125,55 @@ public class PlayerController : MonoBehaviour
     private void HandleVerticalMovement()
     {
         bool isGrounded = _playerState.InGroundedState();
+        bool shouldBeGrounded = isGrounded && !(_playerState.CurrentPlayerMovementState == PlayerMovementState.Jumping ||
+                                                _playerState.CurrentPlayerMovementState == PlayerMovementState.Falling);
 
         // Apply gravity
         _verticalVelocity -= gravity * Time.deltaTime;
 
+        // Force character to stick to ground when in a grounded state
+        if (shouldBeGrounded)
+        {
+            // Cast a ray downward to find the ground
+            RaycastHit hit;
+            Vector3 rayStart = transform.position + Vector3.up * groundCheckOffset;
+
+            // Only check for ground layer
+            if (Physics.Raycast(rayStart, Vector3.down, out hit, groundCheckRayLength, _groundLayers))
+            {
+                // Calculate how far the character needs to move to be on the ground
+                float distanceToGround = hit.distance - groundCheckOffset;
+
+                // If character is above ground beyond threshold, push them down
+                if (distanceToGround > groundSnapThreshold)
+                {
+                    // Apply a configurable downward force when character should be grounded
+                    _verticalVelocity = -_antiBump * groundStickForce;
+
+                    // Optional debug visualization
+                    Debug.DrawLine(rayStart, hit.point, Color.red, 0.1f);
+                }
+                else
+                {
+                    // Character is close enough to ground, apply normal grounding force
+                    _verticalVelocity = -_antiBump;
+
+                    // Optional debug visualization
+                    Debug.DrawLine(rayStart, hit.point, Color.green, 0.1f);
+                }
+            }
+            else
+            {
+                // No ground detected within range
+                Debug.DrawRay(rayStart, Vector3.down * groundCheckRayLength, Color.yellow, 0.1f);
+            }
+        }
         // If grounded and moving down, apply a small downward force
         // This helps stick to the ground and detect slopes
-        if (isGrounded && _verticalVelocity < 0)
+        else if (isGrounded && _verticalVelocity < 0)
+        {
             _verticalVelocity = -_antiBump;
+        }
 
         // Handle jump input
         if (_playerLocomotionInput.JumpPressed && isGrounded)
