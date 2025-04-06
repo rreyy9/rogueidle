@@ -69,7 +69,9 @@ public class PlayerLocomotionInput : MonoBehaviour, PlayerControls.IPlayerLocomo
     {
         // Read the 2D vector input (x,y) for movement
         MovementInput = context.ReadValue<Vector2>();
-        print(MovementInput);
+        
+        //Console for movement input
+        //print(MovementInput);
     }
 
     // Callback for look/camera input (Mouse/Right stick)

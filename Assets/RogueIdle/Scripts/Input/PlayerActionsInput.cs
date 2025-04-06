@@ -10,7 +10,9 @@ public class PlayerActionsInput : MonoBehaviour, PlayerControls.IPlayerActionMap
     private PlayerLocomotionInput _playerLocomotionInput;
     private PlayerState _playerState;
     public bool AttackPressed { get; private set; }
-    public bool GatherPressed { get; private set; }
+    public bool GatherPressed { get; set; }
+    private bool _eKeyPressed = false; // Track if E is pressed, separate from animation
+
 
     private void Awake()
     {
@@ -58,6 +60,13 @@ public class PlayerActionsInput : MonoBehaviour, PlayerControls.IPlayerActionMap
         }
     }
 
+    private void LateUpdate()
+    {
+        // Make sure other input flags are reset properly too
+        // This ensures the input is only processed once
+        IsGatherKeyPressedThisFrame(); // Reset the flag
+    }
+
     public void SetGatherPressedFalse()
     {
         GatherPressed = false;
@@ -78,9 +87,30 @@ public class PlayerActionsInput : MonoBehaviour, PlayerControls.IPlayerActionMap
 
     public void OnGather(InputAction.CallbackContext context)
     {
-        if (!context.performed)
-            return;
+        if (context.performed)
+        {
+            _eKeyPressed = true; // E was just pressed
+        }
+        else if (context.canceled)
+        {
+            _eKeyPressed = false; // E was released
+        }
+    }
 
-        GatherPressed = true;
+    public bool WasGatherKeyPressed()
+    {
+        if (_eKeyPressed)
+        {
+            _eKeyPressed = false; // Reset after checking
+            return true;
+        }
+        return false;
+    }
+
+    public bool IsGatherKeyPressedThisFrame()
+    {
+        bool result = _eKeyPressed;
+        _eKeyPressed = false; // Reset after checking
+        return result;
     }
 }

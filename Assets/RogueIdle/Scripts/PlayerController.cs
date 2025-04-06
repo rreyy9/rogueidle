@@ -359,7 +359,10 @@ public class PlayerController : MonoBehaviour
         // Get the normal of the surface below
         Vector3 normal = CharacterControllerUtils.GetNormalWithSphereCast(_characterController, _groundLayers);
         float angle = Vector3.Angle(normal, Vector3.up);
-        print(angle);
+        
+        //console log angle of jump
+        //print(angle);
+
         bool validAngle = angle <= _characterController.slopeLimit;
 
         // Only consider grounded if touching valid slope
