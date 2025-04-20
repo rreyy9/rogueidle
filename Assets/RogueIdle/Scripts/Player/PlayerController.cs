@@ -1,4 +1,7 @@
+using GDS.Basic.Events;
+using GDS.Core.Events;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static PlayerState;
 
 // This execution order ensures PlayerController runs before most other scripts
@@ -6,6 +9,12 @@ using static PlayerState;
 [DefaultExecutionOrder(-1)]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Inventory System")]
+    [SerializeField] GameObject ConsumeVFX;
+    [SerializeField] Material HighlightMaterial;
+    [SerializeField] Transform VFXPos;
+    [SerializeField] UIDocument uiDocument;
+
     [Header("Components")]
     [SerializeField] private CharacterController _characterController;  // Unity's built-in character movement component
     [SerializeField] private Camera _playerCamera;                      // Reference to the player's camera
@@ -58,6 +67,15 @@ public class PlayerController : MonoBehaviour
     private float _stepOffset;                     // Original step offset value
 
     private PlayerMovementState _lastMovementState = PlayerMovementState.Falling;  // Previous movement state
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // Collide only with Items
+        if (other.CompareTag("item"))
+        {
+            EventBus.GlobalBus.Publish(new PlayerCollideEvent(other));
+        }
+    }
 
     // Initialize components and variables when object is created
     private void Awake()
