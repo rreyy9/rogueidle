@@ -1,4 +1,3 @@
-using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static PlayerState;
@@ -12,7 +11,6 @@ public class PlayerActionsInput : MonoBehaviour, PlayerControls.IPlayerActionMap
     public bool AttackPressed { get; private set; }
     public bool GatherPressed { get; set; }
     private bool _eKeyPressed = false; // Track if E is pressed, separate from animation
-
 
     private void Awake()
     {
